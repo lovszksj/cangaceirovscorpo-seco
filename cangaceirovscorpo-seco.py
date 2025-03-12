@@ -1,7 +1,7 @@
 #FEITO POR JULLYANA AZEVEDO E JOÃO VICTOR GOMES
 
 import pygame
-from mapas import labirinto 
+from mapas import labirinto
 
 pygame.init()
 
@@ -24,7 +24,7 @@ inimigo_img = pygame.transform.scale(inimigo_img, (tamanho_bloco, tamanho_bloco)
 #TELA
 LARGURA, ALTURA = 1260, 800  
 tela = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Cangaceiro vs papangu")
+pygame.display.set_caption("Cangaceiro vs corpo-seco")
 FPS = 15
  
 #DIMENSÕES JOGADOR
@@ -38,6 +38,7 @@ inimigo_x = 150
 inimigo_y = 150
 inimigo_altura = 50
 inimigo_largura = 50
+paralisado_saida = False
 
 #DIMENSÃO ARMADILHA
 armadilha_x = -1
@@ -62,7 +63,7 @@ while rodando:
 
             if labirinto[linha][coluna] == "T":  #CONSTRUÇÃO DA PAREDE
                 tela.blit(parede_img, (x, y))
-            elif labirinto[linha][coluna] == "O":  #CONSTRUÇÃO DO CAMINHO
+            elif labirinto[linha][coluna] == "O" or labirinto[linha][coluna] == "X":  #CONSTRUÇÃO DO CAMINHO
                 tela.blit(caminho_img, (x, y))
             elif labirinto[linha][coluna] == "A":  #CONSTRUÇÃO DA ARMADILHA
                 tela.blit(armadilha_img, (x, y))  
@@ -105,6 +106,7 @@ while rodando:
             nova_x_inimigo += 1
         if teclas_inimigo[pygame.K_UP]:
             nova_y_inimigo -= 1
+    if not paralisado_saida:
         if teclas_inimigo[pygame.K_DOWN]:
             nova_y_inimigo += 1
     
@@ -135,12 +137,16 @@ while rodando:
         jogador_x, jogador_y = nova_x_jogador, nova_y_jogador
 
         #VERIFICA SE O JOGADOR SAIU DO LABIRINTO
-        if nova_x_jogador < 0 or nova_y_jogador >= 40 or nova_y_jogador < 0 or nova_y_jogador >= 37:
+        if labirinto[nova_y_jogador][nova_x_jogador] == "X":
             print("Você encontrou a saída! Parabéns!")
             rodando = False  
 
     if labirinto[nova_y_inimigo][nova_x_inimigo] != 'T':  
         inimigo_x, inimigo_y = nova_x_inimigo, nova_y_inimigo
+        if labirinto[nova_y_inimigo][nova_x_inimigo] == "X":
+            paralisado_saida = True
+        else:
+            paralisado_saida = False
 
     pygame.display.flip()
     relogio.tick(FPS)
